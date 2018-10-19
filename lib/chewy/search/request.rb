@@ -26,7 +26,7 @@ module Chewy
         timeout min_score source stored_fields search_after
         load script_fields suggest aggs aggregations none
         indices_boost rescore highlight total total_count
-        total_entries types delete_all count exists? exist? find pluck
+        total_entries delete_all count exists? exist? find pluck
         scroll_batches scroll_hits scroll_results scroll_wrappers
       ].to_set.freeze
       DEFAULT_BATCH_SIZE = 1000
@@ -67,7 +67,7 @@ module Chewy
       def initialize(*indexes_or_types)
         @_types = indexes_or_types.select { |klass| klass < Chewy::Type }
         @_indexes = indexes_or_types.select { |klass| klass < Chewy::Index }
-        @_types |= @_indexes.flat_map(&:types)
+        @_types |= @_indexes.flat_map { |index| index.has_types? ? index.types : [] }
         @_indexes |= @_types.map(&:index)
       end
 
